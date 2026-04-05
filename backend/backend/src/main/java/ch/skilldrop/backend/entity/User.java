@@ -19,6 +19,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column (nullable = false, unique = true)
+    private String userName;
+
+    @Column
+    private boolean emailVerified = false;
+
+    @Column (nullable = false, unique = true)
+    private String verificationToken;
+
     @Enumerated(EnumType.STRING)
     private Role role = Role.SUBSCRIBER;
 
