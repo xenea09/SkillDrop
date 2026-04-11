@@ -22,7 +22,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-public String createRefreshToken(User user) {
+    public String createRefreshToken(User user) {
     RefreshToken refreshToken = refreshTokenRepository
             .findByUserId(user.getId())
             .orElse(new RefreshToken());
