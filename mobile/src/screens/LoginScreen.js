@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { login } from '../services/api';
+import { saveToken, getToken } from '../services/storage';
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    useEffect(() => {
+        const checkToken = async () => {
+            const token = await getToken();
+            if (token) {
+                navigation.navigate('Main', { token });
+            }
+        };
+        checkToken();
+    }, []);
+
     const handleLogin = async () => {
         try {
             const data = await login(email, password);
-            navigation.navigate('Feed', { token: data.token });
+            await saveToken(data.token, data.refreshToken);
+            navigation.navigate('Main', { token: data.token });
         } catch (error) {
             Alert.alert('Fehler', 'Login fehlgeschlagen');
         }
