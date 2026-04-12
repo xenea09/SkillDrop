@@ -3,7 +3,9 @@ package ch.skilldrop.backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties({"creator"})
 @Data
 @Entity
 @Table(name = "drops")

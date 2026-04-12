@@ -8,6 +8,7 @@ import ch.skilldrop.backend.dto.RefreshTokenRequest;
 import ch.skilldrop.backend.dto.LoginRequest;
 import ch.skilldrop.backend.dto.LoginResponse;
 import ch.skilldrop.backend.dto.RegisterRequest;
+import ch.skilldrop.backend.dto.VerifyRequest;
 import ch.skilldrop.backend.entity.User;
 import ch.skilldrop.backend.repository.UserRepository;
 import ch.skilldrop.backend.security.JwtService;
@@ -106,5 +107,22 @@ public class AuthController {
         refreshTokenRepository.findByToken(request.getRefreshToken())
                 .ifPresent(refreshToken -> refreshTokenRepository.deleteByUser(refreshToken.getUser()));
         return ResponseEntity.ok("Erfolgreich ausgeloggt");
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verify(@RequestBody VerifyRequest request) {
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User nicht gefunden"));
+
+        if (!user.getVerificationToken().equals(request.getCode())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ungültiger Code");
+        }
+
+        user.setEmailVerified(true);
+        user.setVerificationToken(null);
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Email erfolgreich verifiziert!");
     }
 }

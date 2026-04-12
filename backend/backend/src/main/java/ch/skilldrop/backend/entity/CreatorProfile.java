@@ -2,7 +2,9 @@ package ch.skilldrop.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties({"user"})
 @Data
 @Entity
 @Table(name = "creator_profiles")

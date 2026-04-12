@@ -25,7 +25,7 @@ public class User {
     @Column
     private boolean emailVerified = false;
 
-    @Column (nullable = false, unique = true)
+    @Column (unique = true)
     private String verificationToken;
 
     @Enumerated(EnumType.STRING)
