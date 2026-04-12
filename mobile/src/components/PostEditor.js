@@ -5,6 +5,10 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import AudioRecorder from './AudioRecorder';
+import VideoRecorder from './VideoRecorder';
+import VideoPlayer from './VideoPlayer';
+import AudioPlayer from './AudioPlayer';
 
 export default function PostEditor({ onSave, onClose, initialPost }) {
     const [title, setTitle] = useState(initialPost?.title || '');
@@ -100,15 +104,14 @@ export default function PostEditor({ onSave, onClose, initialPost }) {
                             </TouchableOpacity>
                         </View>
                         {block.content ? (
-                            <View style={styles.videoPreview}>
-                                <Text style={styles.videoIcon}>🎥</Text>
-                                <Text style={styles.videoText}>Video ausgewählt</Text>
+                            <View>
+                                <VideoPlayer uri={block.content} />
+                                <TouchableOpacity style={styles.rerecordBtn} onPress={() => updateBlock(block.id, null)}>
+                                    <Text style={styles.rerecordText}>🔄 Nochmal aufnehmen</Text>
+                                </TouchableOpacity>
                             </View>
                         ) : (
-                            <TouchableOpacity style={styles.mediaPicker} onPress={() => pickVideo(block.id)}>
-                                <Text style={styles.mediaPickerIcon}>🎥</Text>
-                                <Text style={styles.mediaPickerText}>Video auswählen</Text>
-                            </TouchableOpacity>
+                            <VideoRecorder onRecorded={(uri) => updateBlock(block.id, uri)} />
                         )}
                     </View>
                 );
@@ -121,11 +124,16 @@ export default function PostEditor({ onSave, onClose, initialPost }) {
                                 <Text style={styles.removeBtn}>✕</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.audioBox}>
-                            <TouchableOpacity style={styles.recordBtn}>
-                                <Text style={styles.recordBtnText}>⏺ Aufnahme starten</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {block.content ? (
+                            <View>
+                                <AudioPlayer uri={block.content} />
+                                <TouchableOpacity style={styles.rerecordBtn} onPress={() => updateBlock(block.id, null)}>
+                                    <Text style={styles.rerecordText}>🔄 Nochmal aufnehmen</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ) : (
+                            <AudioRecorder onRecorded={(uri) => updateBlock(block.id, uri)} />
+                        )}
                     </View>
                 );
             case 'FILE':
@@ -229,4 +237,6 @@ const styles = StyleSheet.create({
     blockBtn: { alignItems: 'center', backgroundColor: '#fff', padding: 12, borderRadius: 12, width: 65, elevation: 1 },
     blockBtnIcon: { fontSize: 24 },
     blockBtnLabel: { fontSize: 11, color: '#555', marginTop: 4 },
+    rerecordBtn: { alignItems: 'center', padding: 10, marginTop: 5 },
+    rerecordText: { color: '#888' },
 });
