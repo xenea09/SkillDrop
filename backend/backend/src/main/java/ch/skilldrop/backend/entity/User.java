@@ -33,6 +33,9 @@ public class User {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @OneToOne(mappedBy = "user")
+    private CreatorProfile creatorProfile;
+
     public enum Role {
         SUBSCRIBER, CREATOR, ADMIN
     }
