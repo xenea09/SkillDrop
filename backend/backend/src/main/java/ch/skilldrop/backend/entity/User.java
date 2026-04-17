@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @Entity
 @Table(name = "users")
@@ -16,6 +18,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -25,7 +28,8 @@ public class User {
     @Column
     private boolean emailVerified = false;
 
-    @Column (unique = true)
+    @JsonIgnore
+    @Column(unique = true)
     private String verificationToken;
 
     @Enumerated(EnumType.STRING)

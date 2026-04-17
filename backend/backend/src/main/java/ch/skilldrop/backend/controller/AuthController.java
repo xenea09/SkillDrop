@@ -20,7 +20,7 @@ import java.util.Random;
 import org.springframework.transaction.annotation.Transactional;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserRepository userRepository;

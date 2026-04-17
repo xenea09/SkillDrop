@@ -1,5 +1,6 @@
 package ch.skilldrop.backend.controller;
 
+import ch.skilldrop.backend.dto.DropResponse;
 import ch.skilldrop.backend.entity.Drop;
 import ch.skilldrop.backend.repository.DropRepository;
 import ch.skilldrop.backend.repository.UserRepository;
@@ -8,8 +9,7 @@ import ch.skilldrop.backend.service.R2Service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import ch.skilldrop.backend.repository.SubscriptionRepository;
 
 
@@ -75,10 +75,11 @@ public class DropController {
             var subscriptions = subscriptionRepository.findBySubscriber(user);
 
             var drops = subscriptions.stream()
-                    .flatMap(sub -> dropRepository.findByCreator(sub.getCreator()).stream())
-                    .toList();
+                .flatMap(sub -> dropRepository.findByCreator(sub.getCreator()).stream())
+                .map(DropResponse::from)
+                .toList();
 
-            return ResponseEntity.ok(drops);
+        return ResponseEntity.ok(drops);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Fehler: " + e.getMessage());
         }
