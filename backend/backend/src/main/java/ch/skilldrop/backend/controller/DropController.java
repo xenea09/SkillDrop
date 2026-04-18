@@ -45,6 +45,12 @@ public class DropController {
             String token = authHeader.replace("Bearer ", "");
             String email = jwtService.extractEmail(token);
 
+            var user = userRepository.findByEmail(email).orElseThrow();
+
+            if (user.getCreatorProfile() == null) {
+                return ResponseEntity.badRequest().body("Du bist kein Creator!");
+            }
+
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             String fileUrl = r2Service.uploadFile(fileName, file.getBytes(), file.getContentType());
 
@@ -52,14 +58,11 @@ public class DropController {
             drop.setTitle(title);
             drop.setType(Drop.DropType.valueOf(type));
             drop.setFileUrl(fileUrl);
-
-            userRepository.findByEmail(email).ifPresent(user -> {
-                drop.setCreator(user.getCreatorProfile());
-            });
+            drop.setCreator(user.getCreatorProfile());
 
             dropRepository.save(drop);
 
-            return ResponseEntity.ok("Drop erstellt: " + fileUrl);
+            return ResponseEntity.ok(DropResponse.from(drop));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Fehler: " + e.getMessage());
         }
