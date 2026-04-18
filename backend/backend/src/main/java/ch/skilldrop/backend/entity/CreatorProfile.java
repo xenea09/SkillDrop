@@ -27,4 +27,6 @@ public class CreatorProfile {
     private Double pricePerMonth = 5.0;
 
     private String stripeAccountId;
+
+    private String stripePriceId;
 }

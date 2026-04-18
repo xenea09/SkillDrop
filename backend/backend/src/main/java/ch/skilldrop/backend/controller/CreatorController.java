@@ -6,6 +6,7 @@ import ch.skilldrop.backend.entity.CreatorProfile;
 import ch.skilldrop.backend.repository.CreatorProfileRepository;
 import ch.skilldrop.backend.repository.UserRepository;
 import ch.skilldrop.backend.security.JwtService;
+import ch.skilldrop.backend.service.StripeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +17,16 @@ public class CreatorController {
     private final CreatorProfileRepository creatorProfileRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final StripeService stripeService;
 
     public CreatorController(CreatorProfileRepository creatorProfileRepository,
                              UserRepository userRepository,
-                             JwtService jwtService) {
+                             JwtService jwtService,
+                             StripeService stripeService) {
         this.creatorProfileRepository = creatorProfileRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.stripeService = stripeService;
     }
 
     @GetMapping
@@ -53,6 +57,8 @@ public class CreatorController {
             profile.setBio(request.getBio());
             profile.setCategory(request.getCategory());
             profile.setPricePerMonth(request.getPricePerMonth() != null ? request.getPricePerMonth() : 5.0);
+            String priceId = stripeService.createPrice(request.getPricePerMonth() != null ? request.getPricePerMonth() : 5.0);
+            profile.setStripePriceId(priceId);
 
             creatorProfileRepository.save(profile);
 

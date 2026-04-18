@@ -47,4 +47,48 @@ public class StripeService {
 
         return subscription.getId();
     }
+
+    public String createPrice(Double amount) throws StripeException {
+        Stripe.apiKey = secretKey;
+
+        com.stripe.model.Price price = com.stripe.model.Price.create(
+            com.stripe.param.PriceCreateParams.builder()
+                .setCurrency("chf")
+                .setUnitAmount((long) (amount * 100))
+                .setRecurring(
+                    com.stripe.param.PriceCreateParams.Recurring.builder()
+                        .setInterval(com.stripe.param.PriceCreateParams.Recurring.Interval.MONTH)
+                        .build()
+                )
+                .setProductData(
+                    com.stripe.param.PriceCreateParams.ProductData.builder()
+                        .setName("SkillDrop Creator Subscription")
+                        .build()
+                )
+                .build()
+        );
+
+        return price.getId();
+    }
+    public String createCheckoutSession(String email, String priceId, Long creatorId) throws StripeException {
+        Stripe.apiKey = secretKey;
+
+        com.stripe.model.checkout.Session session = com.stripe.model.checkout.Session.create(
+            com.stripe.param.checkout.SessionCreateParams.builder()
+                .setMode(com.stripe.param.checkout.SessionCreateParams.Mode.SUBSCRIPTION)
+                .setCustomerEmail(email)
+                .addLineItem(
+                    com.stripe.param.checkout.SessionCreateParams.LineItem.builder()
+                        .setPrice(priceId)
+                        .setQuantity(1L)
+                        .build()
+                )
+                .setSuccessUrl("https://skilldrop.ch/success")
+                .setCancelUrl("https://skilldrop.ch/cancel")
+                .putMetadata("creatorId", creatorId.toString())
+                .build()
+        );
+
+        return session.getUrl();
+    }
 }
